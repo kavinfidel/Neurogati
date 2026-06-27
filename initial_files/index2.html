@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNS Lab - Visual Math Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #eef2f7;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-instruction{
+            font-size: 38 px;
+            color:red;
+            margin-top: 60px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+         
+            
+        }
+        .game-container {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        /* Visual Display Area for the apples */
+        .visual-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .apple-group {
+            font-size: 45px; /* Makes emoji apples big and clear */
+            letter-spacing: 5px;
+            background: #f8fafc;
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+        .math-sign {
+            font-size: 36px;
+            font-weight: bold;
+            color: #64748b;
+        }
+        .equation {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 30px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .btn-option {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .btn-option:hover { background-color: #2563eb; }
+        .btn-option:active { transform: scale(0.95); }
+        
+        .feedback {
+            margin-top: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            min-height: 40px;
+        }
+        /* Style for the "Next" button */
+        .btn-next {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1 class = "main-instruction">Count the apples! 🍎 </h1>
+
+    <div class="game-container">. <!-- The white area -->
+        <div class="visual-container">
+            <div id="group1" class="apple-group"></div>
+            <div class="math-sign">+</div> 
+            <div id="group2" class="apple-group"></div>
+        </div>
+
+        <div class="equation" id="question-text"></div>
+
+        <div class="options-grid" id="choices-grid"></div>
+
+        <div class="feedback" id="feedback-text"></div>
+        
+        <button id="next-btn" class="btn-next hidden" onclick="nextQuestion()">Next Question ➡️</button>
+    </div>
+
+    <script>
+        /* JAVASCRIPT LOGIC */
+
+        // 1. THE DATASET (Our deck of flashcards)
+        const quizData = [
+            {
+                num1: 2,
+                num2: 3,
+                choices:[5,2,1],
+                correct: 5
+            },
+            {
+                num1: 1,
+                num2: 2,
+                choices:[2,7,3],
+                correct: 3
+            },
+            {
+                num1: 4,
+                num2: 2,
+                choices:[6,3,5],
+                correct: 6
+            }
+        ];
+
+        // 2. GAME STATE VARIABLES (Tracking current position)
+        let currentCardIndex = 0;
+
+        // 3. START THE GAME
+        loadQuestion();
+
+        // 4. FUNCTION: Load a flashcard onto the screen
+        function loadQuestion() {
+            // Reset background and clear old feedback
+            document.body.style.backgroundColor = "#eef2f7"; // change the background color after each round
+            document.getElementById("feedback-text").innerText = ""; // set  the feedback-text to empty
+            document.getElementById("next-btn").classList.add("hidden"); // next buttton is hidden
+
+            // Get the data for the current question
+            const currentCard = quizData[currentCardIndex];
+
+            // Render Visual Apples using JavaScript's .repeat() trick
+            document.getElementById("group1").innerText = "🍎".repeat(currentCard.num1);
+            document.getElementById("group2").innerText = "🍎".repeat(currentCard.num2);
+
+            // Render Text Equation
+            document.getElementById("question-text").innerText = `${currentCard.num1} + ${currentCard.num2} = ?`;
+
+            // Render Choices Buttons dynamically
+            const choicesGrid = document.getElementById("choices-grid");
+            choicesGrid.innerHTML = ""; // Clear old buttons
+            
+            // Loop through the choices array and create HTML buttons on the fly
+            currentCard.choices.forEach(choice => {
+                const button = document.createElement("button");
+                button.classList.add("btn-option");
+                button.innerText = choice;
+                button.onclick = () => checkAnswer(choice);
+                choicesGrid.appendChild(button);
+            });
+        }
+
+        // 5. FUNCTION: Check if clicked the right button
+        function checkAnswer(selectedChoice) {
+            const currentCard = quizData[currentCardIndex];
+            const feedbackElement = document.getElementById("feedback-text");
+            const nextButton = document.getElementById("next-btn");
+
+            if (selectedChoice === currentCard.correct) {
+                feedbackElement.innerText = " Brilliant Job! ✨";
+                feedbackElement.style.color = "#10b981";
+                document.body.style.backgroundColor = "#d1fae5";
+                
+                // Show the "Next" button so they can move forward
+                nextButton.classList.remove("hidden");
+            } else {
+                feedbackElement.innerText = " Try counting the apples again!";
+                feedbackElement.style.color = "#ef4444";
+                document.body.style.backgroundColor = "#fee2e2";
+            }
+        }
+
+        // 6. FUNCTION: Move to the next flashcard
+        function nextQuestion() {
+            currentCardIndex++; // Increment index by 1
+            
+            // Check if we still have questions left
+            if (currentCardIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                // End of the quiz
+                document.body.innerHTML = "<div class='game-container'><h1> You finished all the problems. Well Done </h1></div>";
+            }
+        }
+    </script>
+</body>
+</html>

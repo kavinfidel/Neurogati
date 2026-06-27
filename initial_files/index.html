@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNS Lab - Interactive Math</title>
+    <style>
+        /* CSS: Customizing the visual layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e18dcc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+        }
+        /* Massive equation text for high-visibility */
+        .equation {
+            font-size: 64px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 30px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        /* Big, colorful, accessible touch targets  */
+        .btn-option {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.9s ease;
+        }
+        .btn-option:hover { background-color: #2563eb; }
+        .btn-option:active { transform: scale(0.95); } /* Tactile feel on click */
+
+        /* Feedback Area */
+        .feedback {
+            margin-top: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            min-height: 40px; /* Prevents layout shifting when text appears */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="equation" id="question">2 + 3 = ?</div>
+
+        <div class="options-grid">
+            <button class="btn-option" onclick="submitAnswer(4)">4</button>
+            <button class="btn-option" onclick="submitAnswer(5)">5</button>
+            <button class="btn-option" onclick="submitAnswer(6)">6</button>
+        </div>
+
+        <div class="feedback" id="feedback-text"></div>
+    </div>
+
+    <script>
+        /* JAVASCRIPT: The logic */
+        
+        // This is our "State" (the correct answer we are looking for)
+        const correctAnswer = 5;
+
+        // This function executes whenever a kid clicks one of our buttons
+        function submitAnswer(chosenNumber) {
+            const feedbackElement = document.getElementById("feedback-text");
+
+            if (chosenNumber === correctAnswer) {
+                // If the answer is correct
+                feedbackElement.innerText = "🎉 Awesome Job! ✨";
+                feedbackElement.style.color = "#10b981"; // Green color
+                
+                // Add a little celebration styling to the background
+                document.body.style.backgroundColor = "#d1fae5"; 
+            } else {
+                // If the answer is incorrect
+                feedbackElement.innerText = "❌ Try again, you can do it!";
+                feedbackElement.style.color = "#ef4444"; // Red color
+                document.body.style.backgroundColor = "#fee2e2"; 
+            }
+        }
+    </script>
+
+</body>
+</html>
+
+
