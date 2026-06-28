@@ -11,7 +11,7 @@ export const modulesConfig = [
     title: "Counting",
     description: "Count the fruits one by one",
     themeColor: "from-yellow-300 via-orange-300 to-rose-400",
-    icon: "🍎",
+    icon: "🔢",
     lessons: [
       {
         id: "num-1",
@@ -38,7 +38,7 @@ export const modulesConfig = [
     title: "Addition",
     description: "Add the fruits together.",
     themeColor: "from-lime-300 via-emerald-300 to-cyan-400",
-    icon: "🍌",
+    icon: "➕",
     lessons: [
       {
         id: "add-1",
@@ -74,7 +74,7 @@ export const modulesConfig = [
     title: "Subtraction",
     description: "Remove fruits from whole.",
     themeColor: "from-sky-300 via-blue-300 to-violet-400",
-    icon: "🧺",
+    icon: "➖",
     lessons: [
       {
         id: "sub-1",

@@ -1,6 +1,8 @@
 import { modulesConfig } from "../config/lessonsConfig";
 import LessonCard from "./LessonCard";
 
+const HOME_TITLE = "Fruit Game";
+
 /*
   ModuleMap is the dashboard screen.
 
@@ -24,7 +26,7 @@ export default function ModuleMap({ completedLessons, onStartLesson }) {
           </p>
 
           <h1 className="text-4xl font-black text-slate-900 drop-shadow-sm sm:text-6xl">
-            Fruit Math Fun
+            {HOME_TITLE}
           </h1>
 
           <p className="mt-3 text-xl font-black text-slate-700">

@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+LAUNCH_STEPS.md
+KIDS_FRIENDLY_CHANGES.md

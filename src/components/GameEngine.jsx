@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const fruitIcons = {
   apple: "🍎",
@@ -24,23 +24,49 @@ function FruitGroup({ count, fruit, fadedCount = 0 }) {
   );
 }
 
+function NumberEquation({ lesson, question }) {
+  if (lesson.type === "counting") {
+    return (
+      <div className="rounded-[1.5rem] bg-yellow-100 px-6 py-4 text-4xl font-black text-slate-900 shadow-inner">
+        {question.visualCount}
+      </div>
+    );
+  }
+
+  const sign = lesson.type === "subtraction" ? "-" : "+";
+
+  return (
+    <div className="rounded-[1.5rem] bg-yellow-100 px-6 py-4 text-4xl font-black text-slate-900 shadow-inner sm:text-5xl">
+      {question.left} {sign} {question.right} = ?
+    </div>
+  );
+}
+
 function QuestionVisual({ lesson, question }) {
   if (lesson.type === "counting") {
-    return <FruitGroup count={question.visualCount} fruit={question.fruit} />;
+    return (
+      <div className="space-y-5">
+        <FruitGroup count={question.visualCount} fruit={question.fruit} />
+        <NumberEquation lesson={lesson} question={question} />
+      </div>
+    );
   }
 
   if (lesson.type === "addition") {
     return (
-      <div className="grid w-full gap-4 md:grid-cols-[1fr_auto_1fr] md:items-center">
-        <FruitGroup count={question.left} fruit={question.fruit} />
-        <span className="text-5xl font-black text-fuchsia-600">+</span>
-        <FruitGroup count={question.right} fruit={question.fruit} />
+      <div className="space-y-5">
+        <div className="grid w-full gap-4 md:grid-cols-[1fr_auto_1fr] md:items-center">
+          <FruitGroup count={question.left} fruit={question.fruit} />
+          <span className="text-5xl font-black text-fuchsia-600">+</span>
+          <FruitGroup count={question.right} fruit={question.fruit} />
+        </div>
+        <NumberEquation lesson={lesson} question={question} />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <FruitGroup
         count={question.left}
         fruit={question.fruit}
@@ -49,6 +75,7 @@ function QuestionVisual({ lesson, question }) {
       <p className="text-2xl font-black text-slate-700">
         Take away {question.right}
       </p>
+      <NumberEquation lesson={lesson} question={question} />
     </div>
   );
 }
@@ -64,35 +91,118 @@ function QuestionVisual({ lesson, question }) {
 export default function GameEngine({ lesson, onBack, onComplete }) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [feedback, setFeedback] = useState("");
+  const [selectedChoice, setSelectedChoice] = useState(null);
+  const [answerStatus, setAnswerStatus] = useState(null);
+  const nextQuestionTimer = useRef(null);
 
   const currentQuestion = lesson.questions[questionIndex];
   const isLastQuestion = questionIndex === lesson.questions.length - 1;
+  const isFirstQuestion = questionIndex === 0;
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(nextQuestionTimer.current);
+    };
+  }, []);
+
+  function resetAnswerState() {
+    setFeedback("");
+    setSelectedChoice(null);
+    setAnswerStatus(null);
+    clearTimeout(nextQuestionTimer.current);
+  }
+
+  function goToQuestion(nextIndex) {
+    resetAnswerState();
+    setQuestionIndex(nextIndex);
+  }
+
+  function goToPreviousQuestion() {
+    if (!isFirstQuestion) {
+      goToQuestion(questionIndex - 1);
+    }
+  }
+
+  function goToNextQuestion() {
+    if (!isLastQuestion) {
+      goToQuestion(questionIndex + 1);
+    }
+  }
 
   function handleAnswer(choice) {
+    if (answerStatus === "correct") {
+      return;
+    }
+
+    setSelectedChoice(choice);
+
     if (choice !== currentQuestion.answer) {
+      setAnswerStatus("incorrect");
       setFeedback("Try again.");
       return;
     }
 
-    if (isLastQuestion) {
-      onComplete(lesson.id);
-      return;
+    setAnswerStatus("correct");
+    setFeedback("Great job!");
+
+    nextQuestionTimer.current = setTimeout(() => {
+      if (isLastQuestion) {
+        onComplete(lesson.id);
+        return;
+      }
+
+      goToQuestion(questionIndex + 1);
+    }, 1200);
+  }
+
+  function getChoiceClass(choice) {
+    if (selectedChoice !== choice) {
+      return "bg-blue-500 shadow-blue-200 hover:-translate-y-1 hover:bg-blue-600";
     }
 
-    setFeedback("");
-    setQuestionIndex(questionIndex + 1);
+    if (answerStatus === "correct") {
+      return "bg-emerald-500 shadow-emerald-200";
+    }
+
+    if (answerStatus === "incorrect") {
+      return "bg-rose-500 shadow-rose-200";
+    }
+
+    return "bg-blue-500 shadow-blue-200 hover:-translate-y-1 hover:bg-blue-600";
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-cyan-100 via-yellow-100 to-pink-100 px-4 py-8">
-      <section className="w-full max-w-5xl rounded-[2rem] bg-white/90 p-6 text-center shadow-2xl shadow-slate-300/50 ring-4 ring-white sm:p-8">
-        <button
-          type="button"
-          onClick={onBack}
-          className="mb-6 rounded-full bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 hover:bg-slate-200"
-        >
-          Back
-        </button>
+      <section className="relative w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white/90 p-6 text-center shadow-2xl shadow-slate-300/50 ring-4 ring-white sm:p-8">
+
+
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-full bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 hover:bg-slate-200"
+          >
+            Back
+          </button>
+
+          <button
+            type="button"
+            onClick={goToPreviousQuestion}
+            disabled={isFirstQuestion}
+            className="rounded-full bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm ring-2 ring-slate-100 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Previous
+          </button>
+
+          <button
+            type="button"
+            onClick={goToNextQuestion}
+            disabled={isLastQuestion}
+            className="rounded-full bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm ring-2 ring-slate-100 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
 
         <p className="text-sm font-black uppercase tracking-wide text-fuchsia-600">
           {questionIndex + 1} / {lesson.questions.length}
@@ -120,7 +230,10 @@ export default function GameEngine({ lesson, onBack, onComplete }) {
               key={choice}
               type="button"
               onClick={() => handleAnswer(choice)}
-              className="rounded-[1.5rem] bg-blue-500 px-6 py-5 text-5xl font-black text-white shadow-lg shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-600"
+              disabled={answerStatus === "correct"}
+              className={`rounded-[1.5rem] px-6 py-5 text-5xl font-black text-white shadow-lg transition disabled:cursor-not-allowed ${getChoiceClass(
+                choice
+              )}`}
             >
               {choice}
             </button>
