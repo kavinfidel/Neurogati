@@ -9,14 +9,26 @@ import LessonCard from "./LessonCard";
 */
 export default function ModuleMap({ completedLessons, onStartLesson }) {
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-8 sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-6xl">
+    <main className="min-h-screen overflow-hidden bg-gradient-to-br from-sky-200 via-lime-100 to-rose-200 px-4 py-8 sm:px-6 lg:px-8">
+      <section className="pointer-events-none fixed inset-0 opacity-30">
+        <span className="absolute left-[7%] top-[10%] text-6xl">🍎</span>
+        <span className="absolute right-[10%] top-[14%] text-7xl">🍌</span>
+        <span className="absolute bottom-[18%] left-[13%] text-7xl">🧺</span>
+        <span className="absolute bottom-[10%] right-[15%] text-6xl">⭐</span>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl">
         <header className="mb-8 text-center">
-          <h1 className="text-4xl font-black text-slate-900 sm:text-5xl">
-            Math Learning Adventure
+          <p className="mx-auto mb-3 w-fit rounded-full bg-white/80 px-5 py-2 text-sm font-black uppercase tracking-wide text-fuchsia-700 shadow-sm">
+            Pick a game
+          </p>
+
+          <h1 className="text-4xl font-black text-slate-900 drop-shadow-sm sm:text-6xl">
+            Fruit Math Fun
           </h1>
-          <p className="mt-3 text-lg font-semibold text-slate-600">
-            Choose a lesson and learn one small step at a time.
+
+          <p className="mt-3 text-xl font-black text-slate-700">
+            Count. Add. Take away.
           </p>
         </header>
 
@@ -37,18 +49,26 @@ export default function ModuleMap({ completedLessons, onStartLesson }) {
           {modulesConfig.map((module) => (
             <article
               key={module.id}
-              className={`rounded-3xl bg-gradient-to-br ${module.themeColor} p-1 shadow-xl shadow-slate-300/60`}
+              className={`rounded-[2rem] bg-gradient-to-br ${module.themeColor} p-2 shadow-2xl shadow-slate-400/30`}
             >
-              <div className="flex h-full flex-col rounded-[22px] bg-white/90 p-6">
-                <h2 className="text-2xl font-black leading-tight text-slate-900">
-                  {module.title}
-                </h2>
+              <div className="flex h-full flex-col rounded-[1.55rem] bg-white/85 p-5 ring-4 ring-white/60 backdrop-blur">
+                <div className="mb-4 flex items-center gap-4">
+                  <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] bg-white text-5xl shadow-lg">
+                    {module.icon}
+                  </span>
 
-                <p className="mt-3 text-base font-semibold leading-relaxed text-slate-700">
-                  {module.description}
-                </p>
+                  <div>
+                    <h2 className="text-3xl font-black leading-tight text-slate-900">
+                      {module.title}
+                    </h2>
 
-                <div className="mt-6 space-y-3">
+                    <p className="mt-1 text-base font-black text-slate-700">
+                      {module.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-auto space-y-3">
                   {/*
                     This second .map() loops through only this module's lessons.
 
